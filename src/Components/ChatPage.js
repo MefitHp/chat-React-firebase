@@ -1,17 +1,28 @@
 import React, { Component } from 'react';
 import { ChatDisplay } from './ChatDisplay';
+import firebase from 'firebase';
 
 class ChatPage extends Component{
 	state = {
 		nada: 'nada',
 		mensaje: '',
 		messages: [
-			{ id: 0, text: 'Mensaje 1' },
-			{ id: 1, text: 'Mensaje 2' },
-			{ id: 2, text: 'Mensaje 3' },
+			//{ id: 0, text: 'Mensaje 1' },
+			//{ id: 1, text: 'Mensaje 2' },
+			//{ id: 2, text: 'Mensaje 3' },
 		]
 	}
 
+	componentDidMount(){
+		firebase.database().ref('messages/').on("value", snap =>{
+			const currentMsg = snap.val();
+			if (currentMsg !== null){
+				this.setState({
+					messages: currentMsg
+				})
+			}
+		});
+	}
 	handleSubmit = (e) => {
 		e.preventDefault();
 		const msgList= this.state.messages;
@@ -19,10 +30,12 @@ class ChatPage extends Component{
 			id: this.state.messages.length,
 			text: this.state.mensaje
 		}
-		msgList.push(newMsg);
-		this.setState({ messages: msgList });
+		//msgList.push(newMsg);
+		//this.setState({ messages: msgList });
+		firebase.database().ref(`messages/${newMsg.id}`)
+		.set(newMsg);
 		this.setState({mensaje: ''});
-		console.log('Submit: '+ this.state.mensaje)
+		//console.log('Submit: '+ this.state.mensaje)
 	}
 
 	saveInput = (e) => {
@@ -30,17 +43,11 @@ class ChatPage extends Component{
 	}
 
 	render(){
-		const { messages } = this.state;
-		const messageList = messages.map(aux =>{
-			return (
-				<li key={aux.id}>{aux.text}</li>	
-			);
-		})
 		return (
 			<ChatDisplay 
-			messageList = { messageList}
 			handleSubmit = {this.handleSubmit}
 			saveInput = {this.saveInput}
+			{...this.state.messages}
 			{...this.state}	
 			/>
 			);
