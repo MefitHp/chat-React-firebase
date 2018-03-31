@@ -6,8 +6,16 @@ const styles = {
 	smallText: {fontSize: 18},
 	blue: {color: 'Dimgray'}
 }
-export const ChatDisplay = () => (
+export const ChatDisplay = ({ messageList, handleSubmit, saveInput, mensaje, nada}) => (
 	<div style={{...styles.container}}>
 		<h3 style={{...styles.joseluis, ...styles.blue}}>Chat Firebase</h3>
+		<ul>
+			{messageList}
+		</ul>
+		<form>
+			<input type="text" onChange={saveInput} value={mensaje}/>
+			<button type="submit" onClick={handleSubmit}>Send</button>
+			<h1>{nada}</h1>
+		</form>
 	</div>
 	); 
